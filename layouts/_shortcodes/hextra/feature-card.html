@@ -7,6 +7,7 @@ A shortcode for displaying a feature card.
 @param {string} image The image of the card.
 @param {string} imageClass The class of the image.
 @param {string} style The style of the card.
+@param {string} darkStyle The style of the card in dark mode.
 @param {string} icon The icon of the card.
 @param {string} link The link of the card.
 
@@ -19,6 +20,7 @@ A shortcode for displaying a feature card.
 {{- $image := .Get "image" -}}
 {{- $imageClass := .Get "imageClass" -}}
 {{- $style := .Get "style" -}}
+{{- $darkStyle := .Get "darkStyle" -}}
 {{- $icon := .Get "icon" -}}
 {{- $link := .Get "link" -}}
 
@@ -29,10 +31,16 @@ A shortcode for displaying a feature card.
   {{- $image = relURL (strings.TrimPrefix "/" $image) -}}
 {{- end -}}
 
+{{- $darkID := "" -}}
+{{- with $darkStyle -}}
+  {{- $darkID = printf "fc-%x" (md5 $title) | truncate 12 "" -}}
+  <style>:is(.dark) .{{ $darkID }} { {{ replaceRE ";" " !important;" ($darkStyle) | safeCSS }} }</style>
+{{- end -}}
+
 <a
   {{ with $link }}href="{{ $href }}" {{ with $external }} target="_blank" rel="noreferrer"{{ end }}{{ end }}
   {{ with $style }}style="{{ . | safeCSS }}"{{ end }}
-  class="{{ $class }} hextra-feature-card not-prose hx:block hx:relative hx:overflow-hidden hx:rounded-3xl hx:border hx:border-gray-200 hx:hover:border-gray-300 hx:dark:border-neutral-800 hx:dark:hover:border-neutral-700 hx:before:pointer-events-none hx:before:absolute hx:before:inset-0 hx:before:bg-glass-gradient"
+  class="{{ $darkID }} {{ $class }} hextra-feature-card not-prose hx:block hx:relative hx:overflow-hidden hx:rounded-3xl hx:border hx:border-gray-200 hx:hover:border-gray-300 hx:dark:border-neutral-800 hx:dark:hover:border-neutral-700 hx:before:pointer-events-none hx:before:absolute hx:before:inset-0 hx:before:bg-glass-gradient"
 >
   <div class="hx:relative hx:w-full hx:p-6">
     <h3 class="hx:text-2xl hx:font-medium hx:leading-6 hx:mb-2 hx:flex hx:items-center">
